@@ -1,0 +1,9 @@
+{
+  "teachersTable": {
+    "similarity": "⌀ podobnost zápisů",
+    "length": "⌀ počet znaků",
+    "percentil": "Percentil",
+    "avgPercentil": "⌀ percentil"
+  },
+  "similarityInfo": "Míra podobnosti zápisů učitele {{teacherName}} je $t(general:common.percentFormat, { \"percent\": {{similarity}} })."
+}

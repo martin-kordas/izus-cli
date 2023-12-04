@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "greet": "Víta vás iZUŠ CLI!",
+    "return": "Vrátiť sa späť",
+    "goodbye": "Ďakujeme za použitie iZUŠ CLI a tešíme sa dovidenia.",
+    "unknownCommand": "Bol zadaný neznámy príkaz.",
+    "chooseAction": "Vyberte prosím, čo chcete urobiť",
+
+    "main": {
+      "chooseModule": "Zvoľte prosím modul",
+      "lessonsNewImage": "nájdený nový obrázok",
+      "lessonsWrite": "Zápis triednych kníh podľa denníčkov žiakov",
+
+      "lessons": {
+        "name": "$t(cli.main.lessonsWrite)",
+        "name_newImage": "$t(cli.main.lessonsWrite) ($t(cli.main.lessonsNewImage))"
+      },
+      "teachers": {
+        "name": "Vyhľadanie podobnosti v triednych knihách učiteľov"
+      },
+      "auth": {
+        "name": "Správa prihlasovacích údajov"
+      },
+      "changeLng": {
+        "name": "Zmeniť jazyk"
+      },
+      "exit": {
+        "name": "Ukončiť program"
+      }
+    }
+  }
+}

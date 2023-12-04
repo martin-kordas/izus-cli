@@ -1,0 +1,191 @@
+{
+  "common": {
+    "students_one": "žák",
+    "students_few": "žáci",
+    "students_other": "žáků",
+
+    "teachers_one": "učitel",
+    "teachers_few": "učitelé",
+    "teachers_other": "učitelů",
+
+    "lessons_one": "třídní kniha",
+    "lessons_few": "třídní knihy",
+    "lessons_other": "třídních knih",
+
+    "error": "Chyba",
+    "no": "Č.",
+    "pressKeyToInterrupt": "pro ukončení stiskněte libovolnou klávesu...",
+    "unknownError": "Došlo k neznámé chybě.",
+    "unloggedError": "Uživatel není přihlášen",
+    "programError": "Chyba programu",
+    "unknownZus":  "neznámá ZUŠ",
+
+    "percentFormat": "{{percent, number(minimumFractionDigits: 2; maximumFractionDigits: 2)}} %",
+    "numberFormat": "{{number, number(maximumFractionDigits: 0)}}"
+  },
+
+  "auth": {
+    "roles": {
+      "1": "žák",
+      "3": "zákonný zástupce",
+      "5": "zaměstnanec",
+      "7": "vedoucí zaměstnanec",
+      "8": "administrátor školy",
+      "9": "administrátor iZUŠ",
+      "other": "neznámá role"
+    },
+    "credentialsHistoryTable": {
+      "user": "Uživatelské jméno",
+      "userName": "Jméno a příjmení",
+      "school": "Škola",
+      "role": "Role",
+      "lastLogin": "Poslední přihlášení"
+    },
+    "credentialsHistoryFileError": "Nepodařilo se načíst historii přihlášení.",
+    "credentialsHistoryFileCorrupted": "Soubor s historií přihlášení má špatný formát."
+  },
+
+  "izusApi": {
+    "loginFailed": "Přihlášení do iZUŠ se nezdařilo. Zkontrolujte správnost uživatelského jména a hesla.",
+    "error": "Došlo k chybě při komunikaci se serverem iZUŠ."
+  },
+  "googleApi": {
+    "createFolderSuccess": "Byla vytvořena složka {{folderName}}: {{- link}}",
+    "createFolderError": "Při vytváření složky {{folderName}} došlo k chybě."
+  },
+
+  "cli": {
+    "greet": "Vítá vás iZUŠ CLI!",
+    "return": "Vrátit se zpět",
+    "goodbye": "Děkujeme za použití iZUŠ CLI a těšíme se na shledanou.",
+    "unknownCommand": "Byl zadán neznámý příkaz.",
+    "chooseAction": "Zvolte prosím, co chcete udělat",
+    "commandError": "Příkaz skončil chybou.",
+
+    "main": {
+      "chooseModule": "Zvolte prosím modul",
+      "lessonsNewImage": "nalezen nový obrázek",
+      "lessonsWrite": "Zápis individuálních třídních knih podle deníčků žáků",
+
+      "lessons": {
+        "name": "$t(cli.main.lessonsWrite)",
+        "name_newImage": "$t(cli.main.lessonsWrite) ($t(cli.main.lessonsNewImage))"
+      },
+      "teachers": {
+        "name": "Vyhledání podobnosti v individuálních třídních knihách učitelů"
+      },
+      "auth": {
+        "name": "Správa přihlašovacích údajů"
+      },
+      "changeLng": {
+        "name": "Změnit jazyk"
+      },
+      "exit": {
+        "name": "Ukončit program"
+      }
+    },
+    "auth": {
+      "changeLogin": {
+        "name": "Zadat přihlašovací údaje"
+      },
+      "deleteLogin": {
+        "name": "Smazat přihlašovací údaje"
+      },
+      "checkLogin": {
+        "name": "Test přihlášení"
+      }
+    },
+    "lessons": {
+      "getLessons": {
+        "name": "Zobrazit nezapsané třídní knihy",
+        "description": "Zobrazí seznam nezapsaných třídních knih"
+      },
+      "getLessonsWithImage": {
+        "name": "Zobrazit nezapsané třídní knihy (jen ty s deníčkem)",
+        "description": "Zobrazí seznam nezapsaných třídních knih, pro které byl nahrán obrázek deníčku"
+      },
+      "openLesson": {
+        "name": "Zapsat třídní knihu",
+        "description": "Pro zvolenou nezapsanou třídní knihu otevře stránku v prohlížeči a soubor s obrázkem deníčku"
+      },
+      "getStudents": {
+        "name": "Zobrazit seznam žáků",
+        "description": "Zobrazí seznam žáků, ke kterým má uživatel přístup"
+      },
+      "createFolders": {
+        "name": "Vytvořit složky žáků",
+        "description": "Vytvoří na Google Disku složky pro fotky deníčků všech vašich žáků"
+      }
+    },
+    "teachers": {
+      "getTeacherSimilarity": {
+        "name": "Vypočítat podobnost pro vybraného učitele",
+        "description": "Vypočítá míru podobnosti v třídních knihách zadaného učitele"
+      },
+      "getTeachersWithSimilarity": {
+        "name": "Vypočítat podobnost pro všechny učitele",
+        "description": "Vypočítá míru podobnosti v třídních knihách všech učitelů"
+      },
+      "getTeachers": {
+        "name": "Zobrazit seznam učitelů",
+        "description": "Zobrazí seznam učitelů, ke kterým má uživatel přístup"
+      }
+    }
+  },
+
+  "cmds": {
+    "checkLogin": {
+      "success": "Uživatel je úspěšně přihlášen jako {{username}} ({{role}} / {{school}})."
+    },
+    "deleteLogin": {
+      "success": "Přihlašovací údaje byly úspěšně smazány.",
+      "newLoginNeeded": "Je nutné zadat nové přihlašovací údaje."
+    },
+    "changeLogin": {
+      "loginHistory": "Historie přihlášení",
+      "usernamePrompt": "Zadejte uživatelské jméno",
+      "usernameError": "Zadejte platné uživatelské jméno.",
+      "passwordPrompt": "Zadejte heslo",
+      "passwordError": "Zadejte platné heslo."
+    },
+    "changeLng": {
+      "prompt": "Zvolte prosím nový jazyk",
+      "success": "Jazyk byl úspěšně změněn.",
+      "current": "současný"
+    },
+    "openLesson": {
+      "inputError": "Zadaná třídní kniha nebyla nalezena.",
+      "loadingList": "Načítání seznamu třídních knih...",
+      "lessonPrompt": "Zadejte číslo třídní knihy",
+      "lessonError": "Zadejte platné číslo třídní knihy."
+    },
+    "getStudents": {
+      "list": "Seznam žáků (celkem {{count}} $t(common.students))",
+      "listEmpty": "Nebyli nalezeni žádní žáci."
+    },
+    "getLessons": {
+      "list": "Seznam třídních knih (celkem {{count}} $t(common.lessons))",
+      "listEmpty": "Nebyly nalezeny žádné třídní knihy."
+    },
+    "createFolders": {
+      "prompt": "Opravdu chcete vytvořit složky pro všechny žáky?",
+      "noStudents": "Nebyli nalezeni žádní žáci pro vytvoření složek.",
+      "success": "Celkem bylo vytvořeno {{foldersCount}} složek.",
+      "error": "Celkem {{foldersCount}} složek se nepodařilo vytvořit."
+    },
+    "getTeacherSimilarity": {
+      "success": [
+        "Míra podobnosti zápisů daného učitele je $t(common.percentFormat, { \"percent\": {{similarity}} }).",
+        "Průměrná délka zápisů daného učitele je $t(common.numberFormat, { \"number\": {{length}} }) znaků."
+      ],
+      "inputError": "Zadaný učitel nebyl nalezen",
+      "error": "Míru podobnosti zápisů daného učitele se nepodařilo zjistit. Učitel patrně nemá žádnou individuální výuku."
+    },
+    "getTeachers": {
+      "list": "Seznam učitelů (celkem {{count}} $t(common.teachers))",
+      "listEmpty": "Nebyli nalezeni žádní učitelé.",
+      "teacherPrompt": "Zadejte číslo učitele",
+      "teacherError": "Zadejte platné číslo učitele."
+    }
+  }
+}

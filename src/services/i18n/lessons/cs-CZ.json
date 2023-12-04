@@ -1,0 +1,12 @@
+{
+  "lessonsTable": {
+    "lessonDate": "Datum výuky",
+    "notebook": "Deníček"
+  },
+  "openLesson": {
+    "clipboardSuccess": "Text z deníčku byl uložen do schránky.",
+    "clipboardProcessing": "Zpracování textu z deníčku bude dokončeno za okamžik."
+  },
+  "refreshError": "Došlo k chybě při aktualizaci dat o třídních knihách.",
+  "refreshSuccess": "Údaje o třídních knihách byly úspěšně aktualizovány."
+}
