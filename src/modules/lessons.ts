@@ -8,7 +8,7 @@ import clipboard from 'clipboardy'
 import * as auth from '../services/auth.js'
 
 import * as googleApi from '../apis/google.js'
-import { WithRequired } from '../utils/types.js'
+import { HtmlParser, WithRequired } from '../utils/types.js'
 import { Named, getName, createNamed, sortNamed, date2sql, getEnv, info, ucFirst, handleError, UserError, isDev, isString } from '../utils/utils.js'
 import { IzusTable } from '../utils/ui.js'
 import doOCR from '../services/ocr.js'
@@ -104,34 +104,46 @@ export function initRefresh(izusApi: IzusApi) {
   }, ms)
 }
 
+const htmlParsers = {
+
+  parseStudents(htmlZaci: string) {
+    const $ = cheerio.load(htmlZaci)
+    const students = $('#zarazeni_zaci > table > tbody > tr').map((i, el) => {
+      let arr = $(el).find('td.prijmeni, td.prijmeni + td')
+        .map((i, el) => $(el).text())
+        .toArray()
+      return { firstName: arr[1], lastName: arr[0] } as Student
+    }).toArray().sort(sortNamed)
+    return students
+  },
+
+  parsePendingLessons(htmlIndex: string) {
+    const $ = cheerio.load(htmlIndex)
+    let lessons = $('table.tridni_kniha:first tr:not(:first-of-type)').map((i, el) => {
+      let dateStr = $(el).find('td.datum_vyuky').text().replace(/\s/g, ' ')
+      let dateSql = date2sql(config.lessonDate ?? dateStr)
+      if (dateSql) {
+        let date = new Date(dateSql)
+        let wholeName = $(el).find('td.prijmeni').text()
+        wholeName = wholeName.replace(/\(.+\)/, '').trim()  // odstranit studijní zaměření
+        let student = createNamed(wholeName)
+        let link = $(el).find('td.zapsat button').attr('href')
+        return { i, date, student, link } as Lesson
+      }
+    })
+    return lessons.toArray()
+  }
+
+} satisfies { [key: string]: HtmlParser }
+
 export async function getStudents(izusApi: IzusApi) {
   const html = (await izusApi.web.zaci()).data
-  const $ = cheerio.load(html)
-  const students = $('#zarazeni_zaci > table > tbody > tr').map((i, el) => {
-    let arr = $(el).find('td.prijmeni, td.prijmeni + td')
-      .map((i, el) => $(el).text())
-      .toArray()
-    return { firstName: arr[1], lastName: arr[0] } as Student
-  }).toArray().sort(sortNamed)
-  return students
+  return htmlParsers.parseStudents(html)
 }
 
 async function getPendingLessonsFromHTML(izusApi: IzusApi): Promise<Lesson[]> {
   let html = (await izusApi.web.index()).data
-  const $ = cheerio.load(html)
-  let lessons = $('table.tridni_kniha:first tr:not(:first-of-type)').map((i, el) => {
-    let dateStr = $(el).find('td.datum_vyuky').text().replace(/\s/g, ' ')
-    let dateSql = date2sql(config.lessonDate ?? dateStr)
-    if (dateSql) {
-      let date = new Date(dateSql)
-      let wholeName = $(el).find('td.prijmeni').text()
-      wholeName = wholeName.replace(/\(.+\)/, '').trim()  // odstranit studijní zaměření
-      let student = createNamed(wholeName)
-      let link = $(el).find('td.zapsat button').attr('href')
-      return { i, date, student, link } as Lesson
-    }
-  })
-  return lessons.toArray()
+  return htmlParsers.parsePendingLessons(html)
 }
 
 async function addImagesToStudents(students: readonly Student[]) {
@@ -201,7 +213,7 @@ export async function openLesson(izusApi: IzusApi, lesson: OpenableLesson) {
   let url = new URL(lesson.link, getEnv('BASE_URL'))
   open(url.toString())
 
-  if (!isString(lesson.image.id) || !isString(lesson.image.name)) throw new Error()
+  if (!isString(lesson.image.id) || !isString(lesson.image.name)) throw new Error
   let data = (await googleApi.getFile(lesson.image.id))
   let fileName = path.join(process.cwd(), 'images', lesson.image.name)
   await fs.writeFile(fileName, Buffer.from(data));

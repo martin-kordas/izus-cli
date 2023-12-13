@@ -58,11 +58,11 @@ const driveProvider: DriveProvider = {
     */
   async loadSavedCredentialsIfExist() {
     try {
-      const content = await fs.readFile(driveProvider.tokenPath);
-      const credentials = JSON.parse(content.toString());
-      return google.auth.fromJSON(credentials);
+      const content = await fs.readFile(driveProvider.tokenPath)
+      const credentials = JSON.parse(content.toString())
+      return google.auth.fromJSON(credentials)
     } catch (err) {
-      return null;
+      return null
     }
   },
 
@@ -70,34 +70,34 @@ const driveProvider: DriveProvider = {
     * Serializes credentials to a file comptible with GoogleAUth.fromJSON.
     */
   async saveCredentials(client: JSONClient) {
-    const content = await fs.readFile(driveProvider.credentialsPath);
-    const keys = JSON.parse(content.toString());
-    const key = keys.installed || keys.web;
+    const content = await fs.readFile(driveProvider.credentialsPath)
+    const keys = JSON.parse(content.toString())
+    const key = keys.installed || keys.web
     const payload = JSON.stringify({
       type: 'authorized_user',
       client_id: key.client_id,
       client_secret: key.client_secret,
       refresh_token: client.credentials.refresh_token,
-    });
-    await fs.writeFile(driveProvider.tokenPath, payload);
+    })
+    await fs.writeFile(driveProvider.tokenPath, payload)
   },
 
   /**
     * Load or request or authorization to call APIs.
     */
   async authorize(): Promise<GoogleClient> {
-    let client = await this.loadSavedCredentialsIfExist();
+    let client = await this.loadSavedCredentialsIfExist()
     if (client) {
-      return client;
+      return client
     }
     let newClient = await authenticate({
       scopes: driveProvider.scopes,
       keyfilePath: driveProvider.credentialsPath,
-    }) as JSONClient;
+    }) as JSONClient
     if (newClient.credentials) {
-      await this.saveCredentials(newClient);
+      await this.saveCredentials(newClient)
     }
-    return newClient;
+    return newClient
   },
 
 }
@@ -107,14 +107,14 @@ async function createFolder(folderName: string) {
     name: folderName,
     mimeType: 'application/vnd.google-apps.folder',
     parents: [process.env.GOOGLE_FOLDER_ID],
-  };
+  }
 
   let drive = await driveProvider.get()
   const file = await drive.files.create({
     resource: fileMetadata,
     fields: 'id, name, webViewLink',
-  } as drive_v3.Params$Resource$Files$Create);
-  return file;
+  } as drive_v3.Params$Resource$Files$Create)
+  return file
 }
 
 export function createFolders(folderNames: string[], logger: Logger) {
@@ -149,7 +149,7 @@ export async function listFiles(folderId?: string) {
     q: 'trashed=false',
   } as drive_v3.Params$Resource$Files$List
   if (folderId) params.q += `and '${folderId}' in parents`
-  const res = await drive.files.list(params);
+  const res = await drive.files.list(params)
   return res.data.files ?? []
 }
 
@@ -160,6 +160,6 @@ export async function getFile(fileId: string) {
     alt: 'media',
   }, {
     responseType: 'arraybuffer'
-  });
+  })
   return file.data as ArrayBuffer
 }

@@ -3,7 +3,7 @@ import { t } from 'i18next'
 import similarity from 'similarity'
 import chalk from 'chalk'
 
-import { WithRequired, KeysMatching, ReadonlyNonEmptyArray } from '../utils/types.js'
+import { WithRequired, KeysMatching, ReadonlyNonEmptyArray, HtmlParser } from '../utils/types.js'
 import {
   Named, getName, sortNamed, date2sql, average, ucFirst, isDev, delay, chunks,
   info, normalizeWhitespace, isObjectWithKeys, isObjectsWithKeys, isValidNumber
@@ -64,65 +64,81 @@ export async function getTeachers(izusApi: IzusApi) {
   return teachers
 }
 
+const htmlParsers = {
+
+  parseTeachers(htmlZamestnanci: string) {
+    const $ = cheerio.load(htmlZamestnanci)
+    let teachers = $('table#tabulka_zamestnancu tbody tr').map((i, el) => {
+      let lastName = $(el).find('td.prijmeni').text()
+      let firstName = $(el).find('td.prijmeni + td').text()
+      let id = $(el).find('td.prijmeni input[name="zamestnanci[]"]').val() as string
+
+      return {
+        i,
+        id: parseInt(id),
+        firstName,
+        lastName
+      } as Teacher
+    }).toArray().sort(sortNamed)
+    return teachers
+  },
+
+  parseClasses(htmlDokumentyZamestnance: string) {
+    const $ = cheerio.load(htmlDokumentyZamestnance)
+    let sliceEnd = config.statsMaxClasses ?? undefined
+    let classes = $('select#zobrazit_tridni_knihu option:not([value=""])').slice(0, sliceEnd).map((i, el) => {
+      let val = <string>$(el).val()
+      let text = $(el).text()
+      let [studentId, classId] = val.split('_', 2)
+      let res = text.match(/([a-zá-ž ]+) \(([a-zá-ž0-9 ]+)\)/i)
+      if (!res) return
+      let [, studentName, subject] = res
+      let [lastName, firstName] = studentName.split(' ', 2)
+
+      return {
+        id: parseInt(classId),
+        student: { id: parseInt(studentId), firstName, lastName },
+        subject
+      } as Class
+    })
+    return classes.toArray()
+  },
+
+  parseRecords(htmlTridniKniha: string) {
+    const $ = cheerio.load(htmlTridniKniha)
+    let records = $('table.latka:first tbody tr:not(.nevyplneno)')
+      .filter((i, el) => {
+        let attendance = $(el).find('td.dochazka').text()
+        return attendance === 'I'
+      })
+      .map((i, el) => {
+        let dateStr = $(el).find('td.datum').text().replace(/\s/g, ' ')
+        let dateSql = date2sql(dateStr)
+        let record = $(el).find('td.probirana_latka').text().trim()
+        record = normalizeWhitespace(record)
+        return {
+          date: new Date(dateSql),
+          record
+        } as Record
+      })
+    return records.toArray()
+  }
+
+} satisfies { [key: string]: HtmlParser }
+
 async function getTeachersFromHTML(izusApi: IzusApi): Promise<Teacher[]> {
   let html = (await izusApi.web.zamestnanci()).data
-  const $ = cheerio.load(html)
-  let teachers = $('table#tabulka_zamestnancu tbody tr').map((i, el) => {
-    let lastName = $(el).find('td.prijmeni').text()
-    let firstName = $(el).find('td.prijmeni + td').text()
-    let id = $(el).find('td.prijmeni input[name="zamestnanci[]"]').val() as string
-
-    return {
-      i,
-      id: parseInt(id),
-      firstName,
-      lastName
-    } as Teacher
-  }).toArray().sort(sortNamed)
-  return teachers
+  return htmlParsers.parseTeachers(html)
 }
 
 async function getClassesFromHTML(izusApi: IzusApi, teacher: Teacher): Promise<Class[]> {
   let html = (await izusApi.web.dokumentyZamestnance(teacher.id)).data
-  const $ = cheerio.load(html)
-  let sliceEnd = config.statsMaxClasses ?? undefined
-  let classes = $('select#zobrazit_tridni_knihu option:not([value=""])').slice(0, sliceEnd).map((i, el) => {
-    let val = <string>$(el).val()
-    let text = $(el).text()
-    let [studentId, classId] = val.split('_', 2)
-    let res = text.match(/([a-zá-ž ]+) \(([a-zá-ž0-9 ]+)\)/i)
-    if (!res) return
-    let [, studentName, subject] = res
-    let [lastName, firstName] = studentName.split(' ', 2)
-
-    return {
-      id: parseInt(classId),
-      student: { id: parseInt(studentId), firstName, lastName },
-      subject
-    } as Class
-  })
-  return classes.toArray()
+  return htmlParsers.parseClasses(html)
 }
 
 async function getClassRecordsFromHTML(izusApi: IzusApi, cls: Class): Promise<Record[]> {
   let html = (await izusApi.web.tridniKniha(cls.student.id, cls.id)).data
-  const $ = cheerio.load(html)
-  let records = $('table.latka:first tbody tr:not(.nevyplneno)')
-    .filter((i, el) => {
-      let attendance = $(el).find('td.dochazka').text()
-      return attendance === 'I'
-    })
-    .map((i, el) => {
-      let dateStr = $(el).find('td.datum').text().replace(/\s/g, ' ')
-      let dateSql = date2sql(dateStr)
-      let record = $(el).find('td.probirana_latka').text().trim()
-      record = normalizeWhitespace(record)
-      return {
-        date: new Date(dateSql),
-        record
-      } as Record
-    })
-  return records.toArray()
+  return htmlParsers.parseRecords(html)
 }
 
 function getRecordsSimilarity(records: readonly Record[]) {

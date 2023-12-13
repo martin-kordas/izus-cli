@@ -7,6 +7,7 @@ export type Tail<T extends any[]> = T extends [infer A, ...infer B] ? B : never
 export type NonEmptyArray<T> = [T, ...T[]]
 export type ReadonlyNonEmptyArray<T> = readonly [T, ...T[]]
 export type Stringable = { toString: () => string }
+export type HtmlParser = (html: string) => object[]
 
 export type KeysMatching<T, PropsType> = keyof {
   [K in keyof T as T[K] extends PropsType ? K : never]: T[K]

@@ -1,7 +1,8 @@
+import path from 'node:path';
 import { createWorker } from 'tesseract.js'
+
 import * as izusApi from '../apis/izus.js'
 import { scriptDirname } from '../utils/utils.js';
-import path from 'node:path';
 
 
 export default async function doOCR(fileName: string, version: izusApi.Version) {
